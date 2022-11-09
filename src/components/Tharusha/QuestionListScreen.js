@@ -121,6 +121,7 @@ export default class QuestionListScreen extends Component {
     }
 
     renderQuestionList = () => {
+        //Empty List
         if (this.state.filteredQuestionList === undefined || this.state.filteredQuestionList === null || this.state.filteredQuestionList.length === 0) {
             return (
                 <View style={{ width: "100%", height: '75%', justifyContent: "center", alignItems: "center", flexDirection: 'column' }}>
@@ -145,14 +146,16 @@ export default class QuestionListScreen extends Component {
                 </View>
             )
         }
+
+        //Question List
         return (
             <SafeAreaView style={{ flex: 1, width: "100%", paddingTop: 10, height: '100%', paddingBottom: 90 }}>
                 <FlatList
                     ref={(ref) => this.flatListRef = ref}
+                    //question list
                     data={this.state.filteredQuestionList}
-
+                    //one question item
                     renderItem={this.renderQueItem}
-
                     keyExtractor={(item, index) => index}
                 />
             </SafeAreaView>

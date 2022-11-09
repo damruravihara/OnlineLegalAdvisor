@@ -48,7 +48,8 @@ export default class UpdateAnswerScreen extends Component {
                         this.setState({
                             showModel: false
                         }, () => {
-                            this.props.navigation.goBack()
+                            // this.props.navigation.goBack()
+                            this.props.navigation.popToTop()
                         })
                     }, 1000)
                 })
@@ -127,7 +128,8 @@ export default class UpdateAnswerScreen extends Component {
                     this.setState({
                         showModel: false
                     }, () => {
-                        this.props.navigation.goBack()
+                        // this.props.navigation.goBack()
+                        this.props.navigation.popToTop()
                     })
                 }, 1000)
             })

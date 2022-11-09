@@ -50,7 +50,7 @@ export default class AddAnswerScreen extends Component {
                         this.setState({
                             showModel: false
                         },()=>{
-                            this.props.navigation.goBack()
+                            this.props.navigation.popToTop()
                         })
                     },1000)
                 })
