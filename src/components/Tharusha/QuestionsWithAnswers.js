@@ -1,7 +1,7 @@
 import { FlatList, Image, ImageBackground, SafeAreaView, StatusBar, Text, TouchableOpacity, View } from 'react-native'
 import React, { Component } from 'react'
+import { Card, Divider, List, Paragraph } from 'react-native-paper'
 import database from '@react-native-firebase/database';
-import { Card, Divider, Paragraph } from 'react-native-paper';
 
 const Filter = [
     {
@@ -9,7 +9,9 @@ const Filter = [
         name: 'All'
     }
 ]
-export default class QuestionListScreen extends Component {
+
+export default class QuestionsWithAnswers extends Component {
+
 
     constructor(props) {
         super(props);
@@ -27,6 +29,7 @@ export default class QuestionListScreen extends Component {
             },
             questionList: [],
             filteredQuestionList: [],
+            isExpanded: true
 
         }
 
@@ -34,14 +37,24 @@ export default class QuestionListScreen extends Component {
     }
 
     componentDidMount() {
-        this.getQuestionList()
         this.getFilterList()
+        this.getQuestionList()
 
+    }
+
+    getFilterList = () => {
+        this.onGetFilter = database()
+            .ref(`/categories`)
+            .on('value', snapshot => {
+                this.setState({
+                    filterTypes: snapshot.val() !== null ? Object.values(snapshot.val()) : Filter
+                })
+            })
     }
 
     getQuestionList = () => {
         this.onValueChange = database()
-            .ref(`/questions`)
+            .ref(`/answerwithquestion`)
             .on('value', snapshot => {
                 this.setState({
                     questionList: snapshot.val() !== null ? Object.values(snapshot.val()) : []
@@ -60,24 +73,25 @@ export default class QuestionListScreen extends Component {
                         this.setState({
                             filteredQuestionList: this.state.questionList
                         })
+                        console.log(this.state.questionList)
                     }
                 })
             })
     }
 
-    getFilterList=() => {
-        this.onGetFilter = database()
-        .ref(`/categories`)
-        .on('value', snapshot => {
-            this.setState({
-                filterTypes: snapshot.val() !== null ? Object.values(snapshot.val()) : Filter
+    getAnswers = () => {
+        this.onGetAnswer = database()
+            .ref(`/answers`)
+            .on('value', snapshot => {
+                console.log(snapshot.val())
+
             })
-        })
     }
 
     componentWillUnmount() {
-        database().ref(`/questions`).off('value', this.onValueChange)
+        database().ref(`/answerwithquestion`).off('value', this.onValueChange)
         database().ref(`/categories`).off('value', this.onGetFilter)
+
 
     }
 
@@ -121,7 +135,6 @@ export default class QuestionListScreen extends Component {
     }
 
     renderQuestionList = () => {
-        //Empty List
         if (this.state.filteredQuestionList === undefined || this.state.filteredQuestionList === null || this.state.filteredQuestionList.length === 0) {
             return (
                 <View style={{ width: "100%", height: '75%', justifyContent: "center", alignItems: "center", flexDirection: 'column' }}>
@@ -146,52 +159,77 @@ export default class QuestionListScreen extends Component {
                 </View>
             )
         }
-
-        //Question List
         return (
             <SafeAreaView style={{ flex: 1, width: "100%", paddingTop: 10, height: '100%', paddingBottom: 90 }}>
                 <FlatList
                     ref={(ref) => this.flatListRef = ref}
-                    //question list
                     data={this.state.filteredQuestionList}
-                    //one question item
+
                     renderItem={this.renderQueItem}
+
                     keyExtractor={(item, index) => index}
                 />
             </SafeAreaView>
         )
     }
 
+
     renderQueItem = ({ item, index }) => {
+        console.log(item)
         if (item !== null) {
             return (
                 <View style={{ padding: 13, paddingStart: 30, paddingEnd: 30 }}>
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewQuestionScreen', {
+                    {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewQuestionScreen', {
                         data: item
-                    })}>
-                    <Card elevation={4} style={{ backgroundColor: 'rgba(217, 217, 217, 1)', borderRadius: 8 }}>
-                        <Card.Title
-                            title={item.title}
-                            titleNumberOfLines={1}
-                            subtitleNumberOfLines={1}
-                            titleStyle={{ color: 'rgba(0, 0, 0, 1)', fontSize: 20 }}
-                            subtitle={item.categoryName}
-                            subtitleStyle={{ color: 'rgba(0, 0, 0, 1)', fontSize: 18 }}
-                        />
-                        <Card.Content>
-                            <Paragraph numberOfLines={2} style={{ color: 'rgba(0, 0, 0, 1)', fontSize: 16, lineHeight: 24 }}>
-                                {item.description}
-                            </Paragraph>
-                        </Card.Content>
-                    </Card>
-                </TouchableOpacity>
+                    })}> */}
+                    <List.Accordion
+                        expanded={this.state.isExpanded}
+                        onPress={() => {
+                            this.setState({
+                                isExpanded: !this.state.isExpanded
+                            })
+                        }}
+                        titleNumberOfLines={1}
+                        style={{
+                            paddingStart: 15,
+                            paddingEnd: 15,
+                            backgroundColor: 'rgba(217, 217, 217, 1)',
+
+                        }}
+                        title={item.questionTitle}
+                        titleStyle={[ {
+                            fontSize: 16,
+                            fontWeight: 'bold',
+                            color:  'black',
+                        }]}
+                        description={item.categoryName}
+                    >
+                        <Card style={{ backgroundColor: 'rgba(217, 217, 217, 1)', }}>
+                            {/* <Card.Title
+                                title={""}
+                                titleNumberOfLines={1}
+                                subtitleNumberOfLines={1}
+                                titleStyle={{ color: 'rgba(0, 0, 0, 1)', fontSize: 20 }}
+                                subtitle={item.categoryName}
+                                subtitleStyle={{ color: 'rgba(0, 0, 0, 1)', fontSize: 18 }}
+                            /> */}
+                            <Card.Content>
+                                <Text style={{ color: 'rgba(0, 0, 0, 1)', fontSize: 16, lineHeight: 24 }}>Answer :</Text>
+                                <Paragraph numberOfLines={2} style={{ color: 'rgba(0, 0, 0, 1)', fontSize: 16, lineHeight: 24, fontWeight: 'bold' }}>
+                                    {item.answer}
+                                </Paragraph>
+                            </Card.Content>
+                        </Card>
+
+                    </List.Accordion>
+
+                    {/* </TouchableOpacity> */}
                 </View >
             )
         }
 
 
     }
-
 
     render() {
         return (
@@ -212,6 +250,7 @@ export default class QuestionListScreen extends Component {
                     {this.renderQuestionList()}
                 </ImageBackground>
             </View>
+
         )
     }
 }
