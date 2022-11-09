@@ -31,16 +31,30 @@ export default class AddAnswerScreen extends Component {
                 createdBy: UserID
             })
             .then(() => {
-                this.setState({
-                    showModel: true
+                database()
+                .ref(`/answerwithquestion/${UserID + this.props.route.params.data.createdBy}`)
+                .set({
+                    questionBy: this.props.route.params.data.createdBy,
+                    answer: this.state.answer,
+                    createdBy: UserID,
+                    question: this.props.route.params.data.createdBy,
+                    questionTitle: this.props.route.params.data.title,
+                    questionDescription: this.props.route.params.data.description,
+                    categoryName: this.props.route.params.data.categoryName
                 })
-                setTimeout(() => {
+                .then(() =>{
                     this.setState({
-                        showModel: false
-                    },()=>{
-                        this.props.navigation.goBack()
+                        showModel: true
                     })
-                },1000)
+                    setTimeout(() => {
+                        this.setState({
+                            showModel: false
+                        },()=>{
+                            this.props.navigation.goBack()
+                        })
+                    },1000)
+                })
+                .catch(err => console.log(err))
             })
             .catch(err => console.log(err))
     }

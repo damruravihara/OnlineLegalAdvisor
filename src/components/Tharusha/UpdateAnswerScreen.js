@@ -30,21 +30,29 @@ export default class UpdateAnswerScreen extends Component {
                 answer: this.state.answer,
             })
             .then(() => {
-                this.setState({
-                    title: 'Updated!',
-                    subtitle: 'Your Answer Updated Successfully'
-                }, () => {
-                    this.setState({
-                        showModel: true
-                    })
+                database()
+                .ref(`/answerwithquestion/${UserID + this.props.route.params.question.createdBy}`)
+                .update({
+                    answer: this.state.answer,
                 })
-                setTimeout(() => {
+                .then(() => {
                     this.setState({
-                        showModel: false
+                        title: 'Updated!',
+                        subtitle: 'Your Answer Updated Successfully'
                     }, () => {
-                        this.props.navigation.goBack()
+                        this.setState({
+                            showModel: true
+                        })
                     })
-                }, 1000)
+                    setTimeout(() => {
+                        this.setState({
+                            showModel: false
+                        }, () => {
+                            this.props.navigation.goBack()
+                        })
+                    }, 1000)
+                })
+                .catch(err => console.log(err))
             })
             .catch(err => console.log(err))
     }
@@ -102,22 +110,28 @@ export default class UpdateAnswerScreen extends Component {
         .ref(`/answers/${UserID}/${this.props.route.params.question.createdBy}`)
         .remove()
         .then(() => {
-            this.setState({
-                showDeleteAlert: false,
-                title: 'Deleted!',
-                subtitle: 'Your Answer Deleted Successfully'
-            }, () => {
+            database()
+            .ref(`/answerwithquestion/${UserID + this.props.route.params.question.createdBy}`)
+            .remove()
+            .then(() => {
                 this.setState({
-                    showModel: true
-                })
-            })
-            setTimeout(() => {
-                this.setState({
-                    showModel: false
+                    showDeleteAlert: false,
+                    title: 'Deleted!',
+                    subtitle: 'Your Answer Deleted Successfully'
                 }, () => {
-                    this.props.navigation.goBack()
+                    this.setState({
+                        showModel: true
+                    })
                 })
-            }, 1000)
+                setTimeout(() => {
+                    this.setState({
+                        showModel: false
+                    }, () => {
+                        this.props.navigation.goBack()
+                    })
+                }, 1000)
+            })
+            .catch(err => console.log(err))
         })
         .catch(err => console.log(err))
 

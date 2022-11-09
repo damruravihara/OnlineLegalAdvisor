@@ -13,6 +13,7 @@ import {
 } from 'react-native-paper';
 import merge from 'deepmerge';
 import TharushaRootNavigator from '../components/Tharusha/TharushaRootNavigator';
+import BottomNavigation from '../components/NavBar/BottomNavigation';
 
 const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme);
 const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
@@ -29,7 +30,8 @@ export default class RootNavigator extends Component {
                 <PaperProvider theme={CombinedDefaultTheme}>
                     <NavigationContainer theme={CombinedDefaultTheme}>
                         <Stack.Navigator screenOptions={{ headerShown: false}}>
-                            <Stack.Screen name="TharushaRootNavigator" component={TharushaRootNavigator} />
+                            <Stack.Screen name='BottomNavigation' component={BottomNavigation}/>
+                            {/* <Stack.Screen name="TharushaRootNavigator" component={TharushaRootNavigator} /> */}
                         </Stack.Navigator>
                     </NavigationContainer>
                 </PaperProvider>
